@@ -8,6 +8,7 @@ authors = ["EinGuterWaran <<>>"]
 python = "^3.8"
 pandas = "^1.3.4"
 tweepy = "^4.3.0"
+GetOldTweets3 = "^0.0.11"
 
 [tool.poetry.dev-dependencies]
 
