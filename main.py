@@ -13,7 +13,7 @@ access_token_secret = os.environ['access_token_secret']
 
 def counter():
     my_file = open("counter.txt", "r+")
-    counter = int(my_file.read())+1
+    counter = int(my_file.read()) + 1
     my_file.seek(0)
     my_file.write(str(counter))
     my_file.truncate()
@@ -30,6 +30,17 @@ def is_comment(x):
     if x.full_text[0] == "@":
         return True
     return False
+
+
+def get_profile_image(username):
+    api = connect_to_twitter()
+    cursor = tweepy.Cursor(api.user_timeline,
+                           id=username,
+                           tweet_mode='extended').items(1)
+    for x in cursor:
+        image_url = x.user.profile_image_url
+    image_url = image_url.replace("_normal", "")
+    return image_url
 
 
 def connect_to_twitter():
@@ -52,10 +63,10 @@ def most_liked_tweets(username, how_many, min_likes):
             id = x.id
             when = x.created_at
             tweets.append([x.full_text, favs, retweets, id, when])
-    tweet_df = pd.DataFrame(np.array(tweets),
-                            columns=['tweet', 'favs', 'retweet', 'id', 'date'])
-    tweet_df.favs = tweet_df.favs.astype(float)
-    tweet_df.retweet = tweet_df.retweet.astype(float)
+    tweet_df = pd.DataFrame(
+        np.array(tweets), columns=['tweet', 'favs', 'retweets', 'id', 'date'])
+    tweet_df.favs = tweet_df.favs.astype(int)
+    tweet_df.retweet = tweet_df.retweet.astype(int)
     tweet_df = tweet_df.sort_values('favs',
                                     ascending=False).reset_index(drop=True)
     return tweet_df
@@ -77,8 +88,8 @@ def most_liked_tweets2(username, how_many, min_likes):
             id = x.id
             when = x.created_at
             tweets.append([x.full_text, favs, retweets, id, when])
-    tweet_df = pd.DataFrame(np.array(tweets),
-                            columns=['tweet', 'favs', 'retweet', 'id', 'date'])
+    tweet_df = pd.DataFrame(
+        np.array(tweets), columns=['tweet', 'favs', 'retweets', 'id', 'date'])
     tweet_df.favs = tweet_df.favs.astype(float)
     tweet_df.retweet = tweet_df.retweet.astype(float)
     tweet_df = tweet_df.sort_values('favs',
@@ -86,8 +97,26 @@ def most_liked_tweets2(username, how_many, min_likes):
     return tweet_df
 
 
-#my_best_tweets = most_liked_tweets("JanuWaran", 6701, 30)
-my_best_tweets = most_liked_tweets("JanuWaran", 25, 1)
-print(my_best_tweets)
-print(my_best_tweets.favs)
-my_best_tweets.to_csv('tweets'+str(counter())+'.csv', index=False)
+def export_janus_tweets(x, y):
+    my_best_tweets = most_liked_tweets("JanuWaran", x, y)
+    print(my_best_tweets.favs)
+    the_counter = counter()
+    my_best_tweets.to_csv('tweets' + str(the_counter) + '.csv', index=False)
+    return the_counter
+
+
+def tweets_to_images(file, username):
+    tweets = pd.read_csv(file)
+    profile_image = get_profile_image(username)
+    for ind in tweets.index:
+        tweet = tweets['tweet'][ind]
+        favs = tweets['favs'][ind]
+        retweets = tweets['retweets'][ind]
+        date = tweets['date'][ind]
+        # print(str(favs))
+        # print(str(retweets))
+        # print(date)
+
+
+# export_janus_tweets(6701, 30)
+tweets_to_images("tweets2.csv", "JanuWaran")
