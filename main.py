@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import GetOldTweets3 as got
 import random
-from PIL import Image, ImageDraw, ImageOps
+from PIL import Image, ImageDraw, ImageOps, ImageFont
 import urllib.request
 
 client_key = os.environ['client_key']
@@ -56,6 +56,16 @@ def get_profile_image(username):
         image_url = x.user.profile_image_url
     image_url = image_url.replace("_normal", "")
     return image_url
+
+
+def get_name(username):
+    api = connect_to_twitter()
+    cursor = tweepy.Cursor(api.user_timeline,
+                           id=username,
+                           tweet_mode='extended').items(1)
+    for x in cursor:
+        name = x.user.name
+    return name
 
 
 def connect_to_twitter():
@@ -123,6 +133,7 @@ def export_janus_tweets(x, y):
 def tweets_to_images(file, username):
     tweets = pd.read_csv(file)
     profile_image = get_profile_image(username)
+    name = get_name(username)
     for ind in tweets.index:
         tweet = tweets['tweet'][ind]
         favs = tweets['favs'][ind]
@@ -130,10 +141,10 @@ def tweets_to_images(file, username):
         tweet_timestamp = tweets['date'][ind]
         tweet_id = tweets['id'][ind]
         color = color_codes[random.randint(0, len(color_codes) - 1)]
-        tweet_to_image(tweet, favs, retweets, tweet_timestamp, profile_image, tweet_id, color[0], color[1], color[2])
+        tweet_to_image(name, tweet, favs, retweets, tweet_timestamp, profile_image, tweet_id, color[0], color[1], color[2])
 
 
-def tweet_to_image(tweet, favs, retweets, tweet_timestamp, profile_image, tweet_id, r, g, b):
+def tweet_to_image(name, tweet, favs, retweets, tweet_timestamp, profile_image, tweet_id, r, g, b):
     width = 1080
     height = 1080
     urllib.request.urlretrieve(profile_image, "p_img.png")
@@ -145,6 +156,11 @@ def tweet_to_image(tweet, favs, retweets, tweet_timestamp, profile_image, tweet_
     bg_w, bg_h = img.size
     offset = ((bg_w - img_w) // 6, (bg_h - img_h) // 6)
     img.paste(profile_image, offset, profile_image)
+    draw = ImageDraw.Draw(img)
+    tw_font = ImageFont.truetype("HelveticaNeueMedium.ttf", 60)
+    name_font = ImageFont.truetype("HelveticaNeueBold.ttf", 40)
+    draw.text((200, 200),tweet,(0,0,0), font=tw_font)
+    draw.text((0, 0),name,(0,0,0), font=name_font)
     img.save("images/" + str(tweet_id) + ".jpg")
 
 
