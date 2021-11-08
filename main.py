@@ -3,6 +3,8 @@ import tweepy
 import pandas as pd
 import numpy as np
 import GetOldTweets3 as got
+import random
+from PIL import Image
 
 client_key = os.environ['client_key']
 client_secret = os.environ['client_secret']
@@ -10,6 +12,7 @@ bearer_token = os.environ['bearer_token']
 access_token = os.environ['access_token']
 access_token_secret = os.environ['access_token_secret']
 
+color_codes = [[251, 57, 88], [255, 200, 56], [109, 201, 147], [69, 142, 255], [18, 86, 136]]
 
 def counter():
     my_file = open("counter.txt", "r+")
@@ -35,7 +38,7 @@ def is_comment(x):
 def get_profile_image(username):
     api = connect_to_twitter()
     cursor = tweepy.Cursor(api.user_timeline,
-                           id=username,
+                           user_id=username,
                            tweet_mode='extended').items(1)
     for x in cursor:
         image_url = x.user.profile_image_url
@@ -52,7 +55,7 @@ def connect_to_twitter():
 def most_liked_tweets(username, how_many, min_likes):
     api = connect_to_twitter()
     cursor = tweepy.Cursor(api.user_timeline,
-                           id=username,
+                           user_id=username,
                            tweet_mode='extended').items(how_many)
     tweets = []
     for x in cursor:
@@ -112,11 +115,17 @@ def tweets_to_images(file, username):
         tweet = tweets['tweet'][ind]
         favs = tweets['favs'][ind]
         retweets = tweets['retweets'][ind]
-        date = tweets['date'][ind]
-        # print(str(favs))
-        # print(str(retweets))
-        # print(date)
+        tweet_timestamp = tweets['date'][ind]
+        color = color_codes[random.randint(0,len(color_codes)-1)]
+        tweet_to_image(tweet, favs, retweets, tweet_timestamp, profile_image, color[0], color[1], color[2])
+
+
+def tweet_to_image(tweet, favs, retweets, tweet_timestamp, profile_image, r, g, b):
+    width = 1080
+    height = 1080
+    img = Image.new(mode="RGB", size=(width, height), color=(r, g, b))
+    img.save("output.jpg")
 
 
 # export_janus_tweets(6701, 30)
-tweets_to_images("tweets2.csv", "JanuWaran")
+tweet = tweets_to_images("tweets2.csv", "JanuWaran")
