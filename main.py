@@ -4,7 +4,8 @@ import pandas as pd
 import numpy as np
 import GetOldTweets3 as got
 import random
-from PIL import Image
+from PIL import Image, ImageDraw, ImageOps
+import urllib.request
 
 client_key = os.environ['client_key']
 client_secret = os.environ['client_secret']
@@ -13,6 +14,17 @@ access_token = os.environ['access_token']
 access_token_secret = os.environ['access_token_secret']
 
 color_codes = [[251, 57, 88], [255, 200, 56], [109, 201, 147], [69, 142, 255], [18, 86, 136]]
+
+
+def circle_image(im):
+    size = im.size
+    mask = Image.new('L', size, 0)
+    draw = ImageDraw.Draw(mask) 
+    draw.ellipse((0, 0) + size, fill=255)
+    output = ImageOps.fit(im, mask.size, centering=(0.5, 0.5))
+    output.putalpha(mask)
+    return output
+
 
 def counter():
     my_file = open("counter.txt", "r+")
@@ -38,7 +50,7 @@ def is_comment(x):
 def get_profile_image(username):
     api = connect_to_twitter()
     cursor = tweepy.Cursor(api.user_timeline,
-                           user_id=username,
+                           id=username,
                            tweet_mode='extended').items(1)
     for x in cursor:
         image_url = x.user.profile_image_url
@@ -117,16 +129,25 @@ def tweets_to_images(file, username):
         retweets = tweets['retweets'][ind]
         tweet_timestamp = tweets['date'][ind]
         tweet_id = tweets['id'][ind]
-        color = color_codes[random.randint(0,len(color_codes)-1)]
+        color = color_codes[random.randint(0, len(color_codes) - 1)]
         tweet_to_image(tweet, favs, retweets, tweet_timestamp, profile_image, tweet_id, color[0], color[1], color[2])
 
 
 def tweet_to_image(tweet, favs, retweets, tweet_timestamp, profile_image, tweet_id, r, g, b):
     width = 1080
     height = 1080
+    urllib.request.urlretrieve(profile_image, "p_img.png")
+    profile_image = Image.open("p_img.png", 'r')
+    profile_image = circle_image(profile_image)
+    profile_image = profile_image.resize((250, 250))
     img = Image.new(mode="RGB", size=(width, height), color=(r, g, b))
-    img.save("images/output"+str(tweet_id)+".jpg")
+    img_w, img_h = profile_image.size
+    bg_w, bg_h = img.size
+    offset = ((bg_w - img_w) // 6, (bg_h - img_h) // 6)
+    img.paste(profile_image, offset, profile_image)
+    img.save("images/" + str(tweet_id) + ".jpg")
 
 
-# export_janus_tweets(6701, 30)
-tweet = tweets_to_images("tweet_lists/tweets2.csv", "JanuWaran")
+# counter = export_janus_tweets(6701, 30)
+# tweets_to_images("tweet_lists/tweets"+counter+".csv", "JanuWaran")
+tweets_to_images("tweet_lists/tweets2.csv", "JanuWaran")
