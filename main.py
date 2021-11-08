@@ -171,7 +171,7 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
     draw = ImageDraw.Draw(img)
     tw_font = ImageFont.truetype("fonts/HelveticaNeueLight.ttf", 40)
     name_font = ImageFont.truetype("fonts/HelveticaNeueBold.ttf", 40)
-    username_font = ImageFont.truetype("fonts/HelveticaNeueMedium.ttf", 30)
+    username_font = ImageFont.truetype("fonts/HelveticaNeueMedium.ttf", 35)
     tweet_size = get_text_dimensions(tweet, tw_font)
     tweet_w = (width-900) // 2
     tweet_h = (height-tweet_size[1]) // 2 + 50
