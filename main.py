@@ -104,7 +104,7 @@ def export_janus_tweets(x, y):
     my_best_tweets = most_liked_tweets("JanuWaran", x, y)
     print(my_best_tweets.favs)
     the_counter = counter()
-    my_best_tweets.to_csv('tweets' + str(the_counter) + '.csv', index=False)
+    my_best_tweets.to_csv('tweet_lists/tweets' + str(the_counter) + '.csv', index=False)
     return the_counter
 
 
@@ -116,16 +116,17 @@ def tweets_to_images(file, username):
         favs = tweets['favs'][ind]
         retweets = tweets['retweets'][ind]
         tweet_timestamp = tweets['date'][ind]
+        tweet_id = tweets['id'][ind]
         color = color_codes[random.randint(0,len(color_codes)-1)]
-        tweet_to_image(tweet, favs, retweets, tweet_timestamp, profile_image, color[0], color[1], color[2])
+        tweet_to_image(tweet, favs, retweets, tweet_timestamp, profile_image, tweet_id, color[0], color[1], color[2])
 
 
-def tweet_to_image(tweet, favs, retweets, tweet_timestamp, profile_image, r, g, b):
+def tweet_to_image(tweet, favs, retweets, tweet_timestamp, profile_image, tweet_id, r, g, b):
     width = 1080
     height = 1080
     img = Image.new(mode="RGB", size=(width, height), color=(r, g, b))
-    img.save("output.jpg")
+    img.save("images/output"+str(tweet_id)+".jpg")
 
 
 # export_janus_tweets(6701, 30)
-tweet = tweets_to_images("tweets2.csv", "JanuWaran")
+tweet = tweets_to_images("tweet_lists/tweets2.csv", "JanuWaran")
