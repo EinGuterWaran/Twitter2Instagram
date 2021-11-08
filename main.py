@@ -29,7 +29,6 @@ def circle_image(im):
 def get_text_dimensions(text_string, font):
     # https://stackoverflow.com/a/46220683/9263761
     ascent, descent = font.getmetrics()
-
     text_width = font.getmask(text_string).getbbox()[2]
     text_height = font.getmask(text_string).getbbox()[3] + descent
     return (text_width, text_height)
@@ -174,7 +173,6 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
     name_font = ImageFont.truetype("fonts/HelveticaNeueBold.ttf", 40)
     username_font = ImageFont.truetype("fonts/HelveticaNeueMedium.ttf", 30)
     tweet_size = get_text_dimensions(tweet, tw_font)
-    print(tweet_size)
     tweet_w = (width-900) // 2
     tweet_h = (height-tweet_size[1]) // 2 + 50
     if tweet_size[0] <= 900:
@@ -188,21 +186,30 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
         draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+tweet_size[0]+60, tweet_h+tweet_size[1]+200)), fill="white")
       draw.text((tweet_w, tweet_h),tweet,(0,0,0), font=tw_font)
     else:
+      tweet = tweet.replace("\n", " \n ")
       tweet_words = tweet.split(" ")
       current_line = ""
       tweet_lines = []
+      print(tweet_words)
       for word in tweet_words:
+        if word == "":
+          word = ""
+        if word == "\n":
+          tweet_lines.append(current_line)
+          current_line = ""
+          continue
         if current_line != "":
           filler = " "
         else: 
           filler = ""
-        if get_text_dimensions(current_line+filler+word, tw_font)[0] > 900:
+        if current_line!="" and word!="" and get_text_dimensions(current_line+filler+word, tw_font)[0] > 900:
           tweet_lines.append(current_line)
           current_line = word
         else:
           current_line += filler + word
       if (len(current_line) > 0):
         tweet_lines.append(current_line)
+      print(tweet_lines)
       tweet_w = (width-900) // 2
       tweet_h = (height-(tweet_size[1]+15)*len(tweet_lines)) // 2 + 50
       draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+900+60, tweet_h+(tweet_size[1]+15)*len(tweet_lines)+200)), fill="white")
@@ -218,4 +225,4 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
 
 # counter = export_janus_tweets(6701, 30)
 # tweets_to_images("tweet_lists/tweets"+counter+".csv", "JanuWaran")
-tweets_to_images("tweet_lists/tweets2.csv", "JanuWaran", "Janu")
+tweets_to_images("tweet_lists/tweets.csv", "JanuWaran", "Janu")
