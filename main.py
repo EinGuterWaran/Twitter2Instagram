@@ -26,6 +26,15 @@ def circle_image(im):
     return output
 
 
+def get_text_dimensions(text_string, font):
+    # https://stackoverflow.com/a/46220683/9263761
+    ascent, descent = font.getmetrics()
+
+    text_width = font.getmask(text_string).getbbox()[2]
+    text_height = font.getmask(text_string).getbbox()[3] + descent
+    return (text_width, text_height)
+
+
 def counter():
     my_file = open("counter.txt", "r+")
     counter = int(my_file.read()) + 1
@@ -124,7 +133,6 @@ def most_liked_tweets2(username, how_many, min_likes):
 
 def export_janus_tweets(x, y):
     my_best_tweets = most_liked_tweets("JanuWaran", x, y)
-    print(my_best_tweets.favs)
     the_counter = counter()
     my_best_tweets.to_csv('tweet_lists/tweets' + str(the_counter) + '.csv', index=False)
     return the_counter
@@ -138,29 +146,39 @@ def tweets_to_images(file, username):
         tweet = tweets['tweet'][ind]
         favs = tweets['favs'][ind]
         retweets = tweets['retweets'][ind]
-        tweet_timestamp = tweets['date'][ind]
+        # tweet_timestamp = tweets['date'][ind]
         tweet_id = tweets['id'][ind]
         color = color_codes[random.randint(0, len(color_codes) - 1)]
-        tweet_to_image(name, tweet, favs, retweets, tweet_timestamp, profile_image, tweet_id, color[0], color[1], color[2])
+        tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_id, color[0], color[1], color[2])
 
 
-def tweet_to_image(name, tweet, favs, retweets, tweet_timestamp, profile_image, tweet_id, r, g, b):
+def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_id, r, g, b):
     width = 1080
     height = 1080
     urllib.request.urlretrieve(profile_image, "p_img.png")
     profile_image = Image.open("p_img.png", 'r')
     profile_image = circle_image(profile_image)
-    profile_image = profile_image.resize((250, 250))
+    profile_image = profile_image.resize((180, 180))
     img = Image.new(mode="RGB", size=(width, height), color=(r, g, b))
     img_w, img_h = profile_image.size
     bg_w, bg_h = img.size
-    offset = ((bg_w - img_w) // 6, (bg_h - img_h) // 6)
-    img.paste(profile_image, offset, profile_image)
+    # offset = ((bg_w - img_w) // 6, (bg_h - img_h) // 6)
     draw = ImageDraw.Draw(img)
-    tw_font = ImageFont.truetype("fonts/HelveticaNeueMedium.ttf", 60)
+    tw_font = ImageFont.truetype("fonts/HelveticaNeueLight.ttf", 40)
     name_font = ImageFont.truetype("fonts/HelveticaNeueBold.ttf", 40)
-    draw.text((200, 200),tweet,(0,0,0), font=tw_font)
+    username_font = ImageFont.truetype("fonts/HelveticaNeueMedium.ttf", 30)
+    tweet_size = get_text_dimensions(tweet, tw_font)
+    print(tweet_size)
+    tweet_w = (width-tweet_size[0]) // 2
+    tweet_h = (height-tweet_size[1]) // 2
+    if tweet_size[0] <= 900:
+      draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+tweet_size[0]+60, tweet_h+tweet_size[1]+200)), fill="white")
+      draw.text((tweet_w, tweet_h),tweet,(0,0,0), font=tw_font)
+    img.paste(profile_image, (tweet_w, tweet_h-200), profile_image)
+    # draw.rectangle(((0, 00), (100, 100)))
     draw.text((0, 0),name,(0,0,0), font=name_font)
+    draw.text((0, 40),"@"+username,(83,100,113),font=username_font)
+
     img.save("images/" + str(tweet_id) + ".jpg")
 
 
