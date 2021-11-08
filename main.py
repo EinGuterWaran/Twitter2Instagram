@@ -138,10 +138,13 @@ def export_janus_tweets(x, y):
     return the_counter
 
 
-def tweets_to_images(file, username):
+def tweets_to_images(file, handle, name): 
+    # let name empty for original name
     tweets = pd.read_csv(file)
-    profile_image = get_profile_image(username)
-    name = get_name(username)
+    profile_image = get_profile_image(handle)
+    if name == "":
+        name = get_name(handle)
+    color2 = color_codes[random.randint(0, len(color_codes) - 1)]
     for ind in tweets.index:
         tweet = tweets['tweet'][ind]
         favs = tweets['favs'][ind]
@@ -149,7 +152,10 @@ def tweets_to_images(file, username):
         # tweet_timestamp = tweets['date'][ind]
         tweet_id = tweets['id'][ind]
         color = color_codes[random.randint(0, len(color_codes) - 1)]
-        tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_id, color[0], color[1], color[2])
+        while color2 == color:
+          color = color_codes[random.randint(0, len(color_codes) - 1)]
+        color2 = color
+        tweet_to_image(name, handle, tweet, favs, retweets, profile_image, tweet_id, color[0], color[1], color[2])
 
 
 def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_id, r, g, b):
@@ -169,19 +175,47 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
     username_font = ImageFont.truetype("fonts/HelveticaNeueMedium.ttf", 30)
     tweet_size = get_text_dimensions(tweet, tw_font)
     print(tweet_size)
-    tweet_w = (width-tweet_size[0]) // 2
-    tweet_h = (height-tweet_size[1]) // 2
+    tweet_w = (width-900) // 2
+    tweet_h = (height-tweet_size[1]) // 2 + 50
     if tweet_size[0] <= 900:
-      draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+tweet_size[0]+60, tweet_h+tweet_size[1]+200)), fill="white")
+      tweet_w = (width-tweet_size[0]) // 2
+      tweet_h = (height-tweet_size[1]) // 2 + 50
+      if tweet_size[0] <= 700:
+        tweet_w = (width-700) // 2
+        tweet_h = (height-tweet_size[1]) // 2 + 50
+        draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+700+60, tweet_h+tweet_size[1]+200)), fill="white")
+      else:
+        draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+tweet_size[0]+60, tweet_h+tweet_size[1]+200)), fill="white")
       draw.text((tweet_w, tweet_h),tweet,(0,0,0), font=tw_font)
-    img.paste(profile_image, (tweet_w, tweet_h-200), profile_image)
-    # draw.rectangle(((0, 00), (100, 100)))
-    draw.text((0, 0),name,(0,0,0), font=name_font)
-    draw.text((0, 40),"@"+username,(83,100,113),font=username_font)
-
+    else:
+      tweet_words = tweet.split(" ")
+      current_line = ""
+      tweet_lines = []
+      for word in tweet_words:
+        if current_line != "":
+          filler = " "
+        else: 
+          filler = ""
+        if get_text_dimensions(current_line+filler+word, tw_font)[0] > 900:
+          tweet_lines.append(current_line)
+          current_line = word
+        else:
+          current_line += filler + word
+      if (len(current_line) > 0):
+        tweet_lines.append(current_line)
+      tweet_w = (width-900) // 2
+      tweet_h = (height-(tweet_size[1]+15)*len(tweet_lines)) // 2 + 50
+      draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+900+60, tweet_h+(tweet_size[1]+15)*len(tweet_lines)+200)), fill="white")
+      line_no = 0
+      for tweet_line in tweet_lines:
+        draw.text((tweet_w, tweet_h+(tweet_size[1]+15)*line_no),tweet_line,(0,0,0), font=tw_font)
+        line_no += 1
+    img.paste(profile_image, (tweet_w, tweet_h-250), profile_image)
+    draw.text((tweet_w + 200, tweet_h-200),name,(0,0,0), font=name_font)
+    draw.text((tweet_w + 200, tweet_h-140),"@"+username,(83,100,113),font=username_font)
     img.save("images/" + str(tweet_id) + ".jpg")
 
 
 # counter = export_janus_tweets(6701, 30)
 # tweets_to_images("tweet_lists/tweets"+counter+".csv", "JanuWaran")
-tweets_to_images("tweet_lists/tweets2.csv", "JanuWaran")
+tweets_to_images("tweet_lists/tweets2.csv", "JanuWaran", "Janu")
