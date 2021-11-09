@@ -141,7 +141,7 @@ def export_janus_tweets(x, y):
     return the_counter
 
 
-def tweets_to_images(file, handle, name): 
+def tweets_to_images(file, handle, name, showFavsRt): 
     # let name empty for original name
     tweets = pd.read_csv(file)
     profile_image = get_profile_image(handle)
@@ -159,13 +159,14 @@ def tweets_to_images(file, handle, name):
         while color2 == color:
           color = color_codes[random.randint(0, len(color_codes) - 1)]
         color2 = color
-        tweet_to_image(name, handle, tweet, favs, retweets, profile_image, tweet_id, media_url, color[0], color[1], color[2])
+        tweet_to_image(name, handle, showFavsRt, tweet, favs, retweets, profile_image, tweet_id, media_url, color[0], color[1], color[2])
 
 
-def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_id, media_url, r, g, b):
+def tweet_to_image(name, username, showFavsRt, tweet, favs, retweets, profile_image, tweet_id, media_url, r, g, b):
     words = tweet.split(" ")
     to_remove=[]
     tweet_lines = []
+    rectangle_w = 0
     for word in words:
       if word.startswith("https://t.co"):
         response = requests.get(word)
@@ -227,8 +228,10 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
         tweet_w = (width-700) // 2
         tweet_h = (height-tweet_size[1] -media_offset_h) // 2 + 50
         draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+700+60, tweet_h+tweet_size[1]+media_offset_h+200)), fill="white")
+        rectangle_w = tweet_w+700+60
       else:
         draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+tweet_size[0]+60, tweet_h+tweet_size[1]+media_offset_h+200)), fill="white")
+        rectangle_w = tweet_w+tweet_size[0]+60
       draw.text((tweet_w, tweet_h),tweet,(0,0,0), font=tw_font)
     else:
       tweet = tweet.replace("\n", " \n ")
@@ -256,6 +259,7 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
       tweet_w = (width-900) // 2
       tweet_h = (height-(tweet_size[1]+15)*len(tweet_lines)-media_offset_h) // 2 + 50
       draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+900+60, tweet_h+0+media_offset_h+(tweet_size[1]+15)*len(tweet_lines)+200)), fill="white")
+      rectangle_w = tweet_w+900+60
       line_no = 0
       print(tweet_lines)
       print(medias)
@@ -265,13 +269,24 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
     img.paste(profile_image, (tweet_w, tweet_h-250), profile_image)
     draw.text((tweet_w + 200, tweet_h-200),name,(0,0,0), font=name_font)
     draw.text((tweet_w + 200, tweet_h-140),"@"+username,(83,100,113),font=username_font)
+    fr_offset = tweet_h+0+(tweet_size[1]+15)*(1+len(tweet_lines))
     if medias == 1:
         media = Image.open("1.png", 'r')
         media = media.resize((media_sizes[0][1], media_sizes[0][0]))
         img.paste(media, ((width-media_sizes[0][1]) // 2, tweet_h+0+(tweet_size[1]+15)*(1+len(tweet_lines))))
-    img.save("images/" + str(tweet_id) + ".jpg")
+        fr_offset = tweet_h+0+(tweet_size[1]+15)*(1+len(tweet_lines))+media_sizes[0][0]+50
+    if showFavsRt:
+        rectangle_w = rectangle_w - (tweet_w-60)
+        fav_img = Image.open("resources/fav.png", 'r')
+        rt_img = Image.open("resources/rt.png", 'r')
+        fav_img = fav_img.resize((50,50))
+        rt_img = rt_img.resize((66,40))
+        img.paste(fav_img, ((tweet_w-60)+int(rectangle_w*0.3),fr_offset+50), fav_img)
+        img.paste(rt_img, ((tweet_w-60)+int(rectangle_w*0.6),fr_offset+50), rt_img)
+    img.save("tweet_images/" + str(tweet_id) + ".jpg")
 
 
 # counter = export_janus_tweets(6701, 30)
 # tweets_to_images("tweet_lists/tweets"+counter+".csv", "JanuWaran")
-tweets_to_images("tweet_lists/tweets4.csv", "JanuWaran", "Janu")
+# export_janus_tweets(300,20)
+tweets_to_images("tweet_lists/tweets2.csv", "JanuWaran", "Janu", True)
