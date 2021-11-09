@@ -141,7 +141,7 @@ def export_janus_tweets(x, y):
     return the_counter
 
 
-def tweets_to_images(file, handle, name, showFavsRt): 
+def tweets_to_images(file, handle, name, showFavsRt, show_date): 
     # let name empty for original name
     tweets = pd.read_csv(file)
     profile_image = get_profile_image(handle)
@@ -152,17 +152,17 @@ def tweets_to_images(file, handle, name, showFavsRt):
         tweet = tweets['tweet'][ind]
         favs = tweets['favs'][ind]
         retweets = tweets['retweets'][ind]
-        # tweet_timestamp = tweets['date'][ind]
+        tweet_timestamp = tweets['date'][ind]
         tweet_id = tweets['id'][ind]
         media_url = tweets['media_url'][ind]
         color = color_codes[random.randint(0, len(color_codes) - 1)]
         while color2 == color:
           color = color_codes[random.randint(0, len(color_codes) - 1)]
         color2 = color
-        tweet_to_image(name, handle, showFavsRt, tweet, favs, retweets, profile_image, tweet_id, media_url, color[0], color[1], color[2])
+        tweet_to_image(name, handle, showFavsRt, show_date, tweet, tweet_timestamp, favs, retweets, profile_image, tweet_id, media_url, color[0], color[1], color[2])
 
 
-def tweet_to_image(name, username, showFavsRt, tweet, favs, retweets, profile_image, tweet_id, media_url, r, g, b):
+def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp, favs, retweets, profile_image, tweet_id, media_url, r, g, b):
     words = tweet.split(" ")
     to_remove=[]
     tweet_lines = []
@@ -210,6 +210,8 @@ def tweet_to_image(name, username, showFavsRt, tweet, favs, retweets, profile_im
     tw_font = ImageFont.truetype("fonts/HelveticaNeueLight.ttf", 40)
     name_font = ImageFont.truetype("fonts/HelveticaNeueBold.ttf", 40)
     username_font = ImageFont.truetype("fonts/HelveticaNeueMedium.ttf", 35)
+    date_font = ImageFont.truetype("fonts/HelveticaNeueMedium.ttf", 30)
+
     tweet_size = get_text_dimensions(tweet, tw_font)
     tweet_w = (width-900) // 2
     tweet_h = (height-tweet_size[1]) // 2 + 50
@@ -277,8 +279,14 @@ def tweet_to_image(name, username, showFavsRt, tweet, favs, retweets, profile_im
         rt_img = rt_img.resize((66,40))
         img.paste(fav_img, ((tweet_w-60)+int(rectangle_w*0.3),fr_offset+50), fav_img)
         img.paste(rt_img, ((tweet_w-60)+int(rectangle_w*0.6),fr_offset+50), rt_img)
-        draw.text(((tweet_w-60)+int(rectangle_w*0.3)+100, fr_offset+50),str(favs),(0,0,0), font=username_font)
-        draw.text(((tweet_w-60)+int(rectangle_w*0.6)+100, fr_offset+50),str(retweets),(0,0,0), font=username_font)
+        draw.text(((tweet_w-60)+int(rectangle_w*0.3)+70, fr_offset+50),str(favs),(0,0,0), font=username_font)
+        draw.text(((tweet_w-60)+int(rectangle_w*0.6)+80, fr_offset+50),str(retweets),(0,0,0), font=username_font)
+    if show_date:
+        tweet_timestamp2 = tweet_timestamp.split("-")
+        tweet_timestamp3 = tweet_timestamp2[2].split(" ")
+        tweet_timestamp4 = tweet_timestamp3[1].split(":")
+        tweet_timestamp = tweet_timestamp4[0]+":"+tweet_timestamp4[1]+" "+tweet_timestamp3[0]+"."+tweet_timestamp2[1]+"."+tweet_timestamp2[0]
+        draw.text((tweet_w, fr_offset-20),tweet_timestamp,(83,100,113),font=date_font)
     img.save("tweet_images/" + str(tweet_id) + ".jpg")
     print("tweet_images/" + str(tweet_id) + ".jpg saved.")
 
@@ -286,4 +294,4 @@ def tweet_to_image(name, username, showFavsRt, tweet, favs, retweets, profile_im
 # counter = export_janus_tweets(6701, 30)
 # tweets_to_images("tweet_lists/tweets"+counter+".csv", "JanuWaran")
 # export_janus_tweets(300,20)
-tweets_to_images("tweet_lists/tweets2.csv", "JanuWaran", "Janu", True)
+tweets_to_images("tweet_lists/tweets2.csv", "JanuWaran", "Janu", True, True)
