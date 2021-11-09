@@ -6,6 +6,8 @@ import GetOldTweets3 as got
 import random
 from PIL import Image, ImageDraw, ImageOps, ImageFont
 import urllib.request
+import requests
+import cv2
 
 client_key = os.environ['client_key']
 client_secret = os.environ['client_secret']
@@ -85,21 +87,23 @@ def connect_to_twitter():
 def most_liked_tweets(username, how_many, min_likes):
     api = connect_to_twitter()
     cursor = tweepy.Cursor(api.user_timeline,
-                           user_id=username,
+                           id=username,
                            tweet_mode='extended').items(how_many)
     tweets = []
     for x in cursor:
-        if not is_retweet(x) and not is_comment(
-                x) and x.favorite_count >= min_likes:
+        media_url=[]
+        if not is_retweet(x) and not is_comment(x) and x.favorite_count >= min_likes:
+            if 'media' in x.entities:
+              for media in x.extended_entities['media']:
+                media_url.append(media['media_url'])
             favs = x.favorite_count
             retweets = x.retweet_count
             id = x.id
             when = x.created_at
-            tweets.append([x.full_text, favs, retweets, id, when])
-    tweet_df = pd.DataFrame(
-        np.array(tweets), columns=['tweet', 'favs', 'retweets', 'id', 'date'])
+            tweets.append([x.full_text, favs, retweets, id, when, media_url])
+    tweet_df = pd.DataFrame(np.array(tweets), columns=['tweet', 'favs', 'retweets', 'id', 'date', 'media_url'])
     tweet_df.favs = tweet_df.favs.astype(int)
-    tweet_df.retweet = tweet_df.retweet.astype(int)
+    tweet_df.retweets = tweet_df.retweets.astype(int)
     tweet_df = tweet_df.sort_values('favs',
                                     ascending=False).reset_index(drop=True)
     return tweet_df
@@ -124,7 +128,7 @@ def most_liked_tweets2(username, how_many, min_likes):
     tweet_df = pd.DataFrame(
         np.array(tweets), columns=['tweet', 'favs', 'retweets', 'id', 'date'])
     tweet_df.favs = tweet_df.favs.astype(float)
-    tweet_df.retweet = tweet_df.retweet.astype(float)
+    tweet_df.retweet = tweet_df.retweets.astype(float)
     tweet_df = tweet_df.sort_values('favs',
                                     ascending=False).reset_index(drop=True)
     return tweet_df
@@ -150,14 +154,51 @@ def tweets_to_images(file, handle, name):
         retweets = tweets['retweets'][ind]
         # tweet_timestamp = tweets['date'][ind]
         tweet_id = tweets['id'][ind]
+        media_url = tweets['media_url'][ind]
         color = color_codes[random.randint(0, len(color_codes) - 1)]
         while color2 == color:
           color = color_codes[random.randint(0, len(color_codes) - 1)]
         color2 = color
-        tweet_to_image(name, handle, tweet, favs, retweets, profile_image, tweet_id, color[0], color[1], color[2])
+        tweet_to_image(name, handle, tweet, favs, retweets, profile_image, tweet_id, media_url, color[0], color[1], color[2])
 
 
-def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_id, r, g, b):
+def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_id, media_url, r, g, b):
+    words = tweet.split(" ")
+    to_remove=[]
+    tweet_lines = []
+    for word in words:
+      if word.startswith("https://t.co"):
+        response = requests.get(word)
+        if not "photo" in response.url and not "video" in response.url:
+          to_remove.append(word)
+          continue
+        elif "video" in response.url:
+          print("Video:")  
+        elif "photo" in response.url:
+          print("Photo:")
+        to_remove.append(word)
+    for tr in to_remove:  
+      words.remove(tr)
+    tweet = " ".join(words)
+    media_url = media_url.replace("[","").replace("]","").replace("'","").split(",")
+    medias = len(media_url)
+    if medias == 1 and media_url[0] == "":
+      medias = 0
+    media_sizes = []
+    for url in media_url:
+      if url != "":
+        urllib.request.urlretrieve(url, "1.png")
+        im = cv2.imread('1.png').shape
+        media_sizes.append([im[0], im[1]])
+    for media_size in media_sizes:
+      if media_size[1] > 850:
+        how_smaller = 850/media_size[1]
+        media_size[1] = 850
+        media_size[0] = int(how_smaller*media_size[0])
+      if media_size[0] > 300:
+        how_smaller = 300/media_size[0]
+        media_size[0] = 300
+        media_size[1] = int(how_smaller*media_size[1])
     width = 1080
     height = 1080
     urllib.request.urlretrieve(profile_image, "p_img.png")
@@ -175,22 +216,24 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
     tweet_size = get_text_dimensions(tweet, tw_font)
     tweet_w = (width-900) // 2
     tweet_h = (height-tweet_size[1]) // 2 + 50
+    if medias == 1:
+      media_offset_h = media_sizes[0][0]
+    else:
+      media_offset_h = 0
     if tweet_size[0] <= 900:
       tweet_w = (width-tweet_size[0]) // 2
-      tweet_h = (height-tweet_size[1]) // 2 + 50
+      tweet_h = (height-tweet_size[1]-media_offset_h) // 2 + 50
       if tweet_size[0] <= 700:
         tweet_w = (width-700) // 2
-        tweet_h = (height-tweet_size[1]) // 2 + 50
-        draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+700+60, tweet_h+tweet_size[1]+200)), fill="white")
+        tweet_h = (height-tweet_size[1] -media_offset_h) // 2 + 50
+        draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+700+60, tweet_h+tweet_size[1]+media_offset_h+200)), fill="white")
       else:
-        draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+tweet_size[0]+60, tweet_h+tweet_size[1]+200)), fill="white")
+        draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+tweet_size[0]+60, tweet_h+tweet_size[1]+media_offset_h+200)), fill="white")
       draw.text((tweet_w, tweet_h),tweet,(0,0,0), font=tw_font)
     else:
       tweet = tweet.replace("\n", " \n ")
       tweet_words = tweet.split(" ")
       current_line = ""
-      tweet_lines = []
-      print(tweet_words)
       for word in tweet_words:
         if word == "":
           word = ""
@@ -198,6 +241,7 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
           tweet_lines.append(current_line)
           current_line = ""
           continue
+        if word.startswith("https://t.co"):                    continue
         if current_line != "":
           filler = " "
         else: 
@@ -209,10 +253,9 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
           current_line += filler + word
       if (len(current_line) > 0):
         tweet_lines.append(current_line)
-      print(tweet_lines)
       tweet_w = (width-900) // 2
-      tweet_h = (height-(tweet_size[1]+15)*len(tweet_lines)) // 2 + 50
-      draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+900+60, tweet_h+(tweet_size[1]+15)*len(tweet_lines)+200)), fill="white")
+      tweet_h = (height-(tweet_size[1]+15)*len(tweet_lines)-media_offset_h) // 2 + 50
+      draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+900+60, tweet_h+media_offset_h+(tweet_size[1]+15)*len(tweet_lines)+200)), fill="white")
       line_no = 0
       for tweet_line in tweet_lines:
         draw.text((tweet_w, tweet_h+(tweet_size[1]+15)*line_no),tweet_line,(0,0,0), font=tw_font)
@@ -220,9 +263,13 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
     img.paste(profile_image, (tweet_w, tweet_h-250), profile_image)
     draw.text((tweet_w + 200, tweet_h-200),name,(0,0,0), font=name_font)
     draw.text((tweet_w + 200, tweet_h-140),"@"+username,(83,100,113),font=username_font)
+    if medias == 1:
+        media = Image.open("1.png", 'r')
+        media = media.resize((media_sizes[0][1], media_sizes[0][0]))
+        img.paste(media, ((width-media_sizes[0][1]) // 2, tweet_h+(tweet_size[1]+15)*(1+len(tweet_lines))))
     img.save("images/" + str(tweet_id) + ".jpg")
 
 
 # counter = export_janus_tweets(6701, 30)
 # tweets_to_images("tweet_lists/tweets"+counter+".csv", "JanuWaran")
-tweets_to_images("tweet_lists/tweets.csv", "JanuWaran", "Janu")
+tweets_to_images("tweet_lists/tweets4.csv", "JanuWaran", "Janu")
