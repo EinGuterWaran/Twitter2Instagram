@@ -195,9 +195,9 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
         how_smaller = 850/media_size[1]
         media_size[1] = 850
         media_size[0] = int(how_smaller*media_size[0])
-      if media_size[0] > 300:
-        how_smaller = 300/media_size[0]
-        media_size[0] = 300
+      if media_size[0] > 400:
+        how_smaller = 400/media_size[0]
+        media_size[0] = 400
         media_size[1] = int(how_smaller*media_size[1])
     width = 1080
     height = 1080
