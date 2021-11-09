@@ -173,10 +173,6 @@ def tweet_to_image(name, username, showFavsRt, tweet, favs, retweets, profile_im
         if not "photo" in response.url and not "video" in response.url:
           to_remove.append(word)
           continue
-        elif "video" in response.url:
-          print("Video:")  
-        elif "photo" in response.url:
-          print("Photo:")
         to_remove.append(word)
     for tr in to_remove:  
       words.remove(tr)
@@ -261,8 +257,6 @@ def tweet_to_image(name, username, showFavsRt, tweet, favs, retweets, profile_im
       draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+900+60, tweet_h+0+media_offset_h+(tweet_size[1]+15)*len(tweet_lines)+200)), fill="white")
       rectangle_w = tweet_w+900+60
       line_no = 0
-      print(tweet_lines)
-      print(medias)
       for tweet_line in tweet_lines:
         draw.text((tweet_w, tweet_h+(tweet_size[1]+15)*line_no),tweet_line,(0,0,0), font=tw_font)
         line_no += 1
@@ -283,7 +277,10 @@ def tweet_to_image(name, username, showFavsRt, tweet, favs, retweets, profile_im
         rt_img = rt_img.resize((66,40))
         img.paste(fav_img, ((tweet_w-60)+int(rectangle_w*0.3),fr_offset+50), fav_img)
         img.paste(rt_img, ((tweet_w-60)+int(rectangle_w*0.6),fr_offset+50), rt_img)
+        draw.text(((tweet_w-60)+int(rectangle_w*0.3)+100, fr_offset+50),str(favs),(0,0,0), font=username_font)
+        draw.text(((tweet_w-60)+int(rectangle_w*0.6)+100, fr_offset+50),str(retweets),(0,0,0), font=username_font)
     img.save("tweet_images/" + str(tweet_id) + ".jpg")
+    print("tweet_images/" + str(tweet_id) + ".jpg saved.")
 
 
 # counter = export_janus_tweets(6701, 30)
