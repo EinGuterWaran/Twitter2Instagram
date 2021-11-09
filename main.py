@@ -220,7 +220,7 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
       media_offset_h = media_sizes[0][0]
     else:
       media_offset_h = 0
-    if tweet_size[0] <= 900:
+    if tweet_size[0] <= 900 and "\n" not in tweet:
       tweet_w = (width-tweet_size[0]) // 2
       tweet_h = (height-tweet_size[1]-media_offset_h) // 2 + 50
       if tweet_size[0] <= 700:
@@ -255,8 +255,10 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
         tweet_lines.append(current_line)
       tweet_w = (width-900) // 2
       tweet_h = (height-(tweet_size[1]+15)*len(tweet_lines)-media_offset_h) // 2 + 50
-      draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+900+60, tweet_h+media_offset_h+(tweet_size[1]+15)*len(tweet_lines)+200)), fill="white")
+      draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+900+60, tweet_h+0+media_offset_h+(tweet_size[1]+15)*len(tweet_lines)+200)), fill="white")
       line_no = 0
+      print(tweet_lines)
+      print(medias)
       for tweet_line in tweet_lines:
         draw.text((tweet_w, tweet_h+(tweet_size[1]+15)*line_no),tweet_line,(0,0,0), font=tw_font)
         line_no += 1
@@ -266,7 +268,7 @@ def tweet_to_image(name, username, tweet, favs, retweets, profile_image, tweet_i
     if medias == 1:
         media = Image.open("1.png", 'r')
         media = media.resize((media_sizes[0][1], media_sizes[0][0]))
-        img.paste(media, ((width-media_sizes[0][1]) // 2, tweet_h+(tweet_size[1]+15)*(1+len(tweet_lines))))
+        img.paste(media, ((width-media_sizes[0][1]) // 2, tweet_h+0+(tweet_size[1]+15)*(1+len(tweet_lines))))
     img.save("images/" + str(tweet_id) + ".jpg")
 
 
