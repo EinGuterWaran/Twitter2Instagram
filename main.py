@@ -5,6 +5,7 @@ import numpy as np
 import GetOldTweets3 as got
 import random
 from PIL import Image, ImageDraw, ImageOps, ImageFont
+from pilmoji import Pilmoji
 import urllib.request
 import requests
 import cv2
@@ -230,7 +231,8 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
       else:
         draw.rectangle(((tweet_w-60, tweet_h-300),(tweet_w+tweet_size[0]+60, tweet_h+tweet_size[1]+media_offset_h+200)), fill="white")
         rectangle_w = tweet_w+tweet_size[0]+60
-      draw.text((tweet_w, tweet_h),tweet,(0,0,0), font=tw_font)
+      with Pilmoji(img) as pilmoji:
+        pilmoji.text((tweet_w, tweet_h),tweet,(0,0,0), font=tw_font)
     else:
       tweet = tweet.replace("\n", " \n ")
       tweet_words = tweet.split(" ")
@@ -260,11 +262,13 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
       rectangle_w = tweet_w+900+60
       line_no = 0
       for tweet_line in tweet_lines:
-        draw.text((tweet_w, tweet_h+(tweet_size[1]+15)*line_no),tweet_line,(0,0,0), font=tw_font)
+        with Pilmoji(img) as pilmoji:
+          pilmoji.text((tweet_w, tweet_h+(tweet_size[1]+15)*line_no),tweet_line,(0,0,0), font=tw_font)
+
         line_no += 1
     img.paste(profile_image, (tweet_w, tweet_h-250), profile_image)
-    draw.text((tweet_w + 200, tweet_h-200),name,(0,0,0), font=name_font)
-    draw.text((tweet_w + 200, tweet_h-140),"@"+username,(83,100,113),font=username_font)
+    Pilmoji(img).text((tweet_w + 200, tweet_h-200),name,(0,0,0), font=name_font)
+    Pilmoji(img).text((tweet_w + 200, tweet_h-140),"@"+username,(83,100,113),font=username_font)
     fr_offset = tweet_h+0+(tweet_size[1]+15)*(1+len(tweet_lines))
     if medias == 1:
         media = Image.open("1.png", 'r')
