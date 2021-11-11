@@ -286,14 +286,15 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
         tweet_timestamp3 = tweet_timestamp2[2].split(" ")
         tweet_timestamp4 = tweet_timestamp3[1].split(":")
         months = ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."]
-        if int(tweet_timestamp4[0]) == 0:
-          tweet_timestamp4[0] = "12"
         if int(tweet_timestamp4[0]) < 12:
           tweet_timestamp4[1] += " vorm."
         else:
           tweet_timestamp4[1] += " nachm."
           if int(tweet_timestamp4[0]) != 12:
             tweet_timestamp4[0] = str(int(tweet_timestamp4[0])-12)
+        if int(tweet_timestamp4[0]) == 0:
+            tweet_timestamp4[0] = "12"
+
         tweet_timestamp = tweet_timestamp4[0]+":"+tweet_timestamp4[1]+" · "+tweet_timestamp3[0]+". "+months[int(tweet_timestamp2[1])+1]+" "+tweet_timestamp2[0]
         draw.text((tweet_w, fr_offset-40),tweet_timestamp,(83,100,113),font=date_font)
     img.save("tweet_images/" + str(tweet_id) + ".jpg")
