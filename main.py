@@ -295,7 +295,7 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
           if int(tweet_timestamp4[0]) != 12:
             tweet_timestamp4[0] = str(int(tweet_timestamp4[0])-12)
         tweet_timestamp = tweet_timestamp4[0]+":"+tweet_timestamp4[1]+" · "+tweet_timestamp3[0]+". "+months[int(tweet_timestamp2[1])+1]+" "+tweet_timestamp2[0]
-        draw.text((tweet_w, fr_offset-20),tweet_timestamp,(83,100,113),font=date_font)
+        draw.text((tweet_w, fr_offset-40),tweet_timestamp,(83,100,113),font=date_font)
     img.save("tweet_images/" + str(tweet_id) + ".jpg")
     print("tweet_images/" + str(tweet_id) + ".jpg saved.")
 
