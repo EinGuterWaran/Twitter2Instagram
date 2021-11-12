@@ -236,9 +236,9 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
     for media_size in media_sizes:
         w_factor = 1
         h_factor = 1
-        if medias == 2 or medias == 4:
+        if medias == 2 or medias == 4 or medias == 3:
           w_factor = 2
-        if medias == 4:
+        if medias == 4 or medias == 3:
           h_factor = 2
         if media_size[1] > int(850/w_factor):
             how_smaller = int(850/w_factor) / media_size[1]
@@ -279,6 +279,13 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
         else:
           media_offset_h += media_sizes[3][0]
         media_offset_h += 20
+    elif medias == 3:
+        if media_sizes[0][0] > media_sizes[1][0]:
+          media_offset_h = media_sizes[0][0]
+        else:
+          media_offset_h = media_sizes[1][0]
+        media_offset_h += media_sizes[2][0]
+        media_offset_h += 20
     else:
         media_offset_h = 0
     if tweet_size[0] <= 900 and "\n" not in tweet:
@@ -300,7 +307,7 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
         tweet_w = (width - 900) // 2
         tweet_h = (height - (tweet_size[1] + 15) * len(tweet_lines) -
                    media_offset_h) // 2 + 50
-        draw.rectangle(((tweet_w - 60, tweet_h - 300),(tweet_w + 900 + 60, tweet_h + 0 + media_offset_h  +(tweet_size[1] + 15) * len(tweet_lines) + 200)),
+        draw.rectangle(((tweet_w - 60, tweet_h - 300),(tweet_w + 900 + 60, tweet_h + media_offset_h  +(tweet_size[1] + 15) * len(tweet_lines) + 200)),
                        fill="white")
         rectangle_w = tweet_w + 900 + 60
         line_no = 0
@@ -319,34 +326,38 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
     Pilmoji(img).text((tweet_w + 200, tweet_h - 140),
                       "@" + username, (83, 100, 113),
                       font=username_font)
-    fr_offset = tweet_h + 0 + (tweet_size[1] + 15) * (1 + len(tweet_lines))
+    fr_offset = tweet_h + (tweet_size[1] + 15) * (1 + len(tweet_lines))
     if medias == 1:
         media = Image.open("cache/1.png", 'r')
         media = media.resize((media_sizes[0][1], media_sizes[0][0]))
-        img.paste(media, ((width - media_sizes[0][1]) // 2, tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines))))
-        fr_offset = tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines)) + media_offset_h + 50
+        img.paste(media, ((width - media_sizes[0][1]) // 2, tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
+        fr_offset = tweet_h + (tweet_size[1] + 15) * (len(tweet_lines)) + media_offset_h + 50
     if medias == 2:
         media_1 = Image.open("cache/1.png", 'r')
         media_2 = Image.open("cache/2.png", 'r')
         media_1 = media_1.resize((media_sizes[0][1], media_sizes[0][0]))
         media_2 = media_2.resize((media_sizes[1][1], media_sizes[1][0]))
-        img.paste(media_1, ((width - media_sizes[0][1]-media_sizes[1][1]-20) // 2, tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines))))
-        img.paste(media_2, ((width - media_sizes[0][1]-media_sizes[1][1]) // 2+media_sizes[0][1] +20, tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines))))
-        fr_offset = tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines)) + media_offset_h + 50
-    if medias == 4:
+        img.paste(media_1, ((width - media_sizes[0][1]-media_sizes[1][1]-20) // 2, tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
+        img.paste(media_2, ((width - media_sizes[0][1]-media_sizes[1][1]) // 2+media_sizes[0][1] +20, tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
+        fr_offset = tweet_h + (tweet_size[1] + 15) * (len(tweet_lines)) + media_offset_h + 50
+    if medias == 4 or medias == 3:
         media_1 = Image.open("cache/1.png", 'r')
         media_2 = Image.open("cache/2.png", 'r')
         media_3 = Image.open("cache/3.png", 'r')
-        media_4 = Image.open("cache/4.png", 'r')
         media_1 = media_1.resize((media_sizes[0][1], media_sizes[0][0]))
         media_2 = media_2.resize((media_sizes[1][1], media_sizes[1][0]))
         media_3 = media_3.resize((media_sizes[2][1], media_sizes[1][0]))
-        media_4 = media_4.resize((media_sizes[3][1], media_sizes[1][0]))
-        img.paste(media_1, ((width - media_sizes[0][1]-media_sizes[1][1]-20) // 2, tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines))))
-        img.paste(media_2, ((width - media_sizes[0][1]-media_sizes[1][1]) // 2+media_sizes[0][1] +20, tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines))))
-        img.paste(media_3, ((width - media_sizes[2][1]-media_sizes[3][1]-20) // 2, 20 + media_sizes[0][0] + tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines))))
-        img.paste(media_4, ((width - media_sizes[2][1]-media_sizes[3][1]) // 2+media_sizes[2][1] +20,  20 + media_sizes[1][0] + tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines))))
-        fr_offset = tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines)) + media_offset_h + 50
+        if medias == 4:
+          media_4 = Image.open("cache/4.png", 'r')
+          media_4 = media_4.resize((media_sizes[3][1], media_sizes[1][0]))
+          img.paste(media_4, ((width - media_sizes[2][1]-media_sizes[3][1]) // 2+media_sizes[2][1] +20,  20 + media_sizes[1][0] + tweet_h  + (tweet_size[1] + 15) * (len(tweet_lines))))
+          img.paste(media_3, ((width - media_sizes[2][1]-media_sizes[3][1]-20) // 2, 20 + media_sizes[0][0] + tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
+        else:
+          img.paste(media_3, ((width - media_sizes[2][1]) // 2, 20 + media_sizes[0][0] + tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
+        img.paste(media_1, ((width - media_sizes[0][1]-media_sizes[1][1]-20) // 2, tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
+        img.paste(media_2, ((width - media_sizes[0][1]-media_sizes[1][1]) // 2+media_sizes[0][1] +20, tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
+        fr_offset = tweet_h + (tweet_size[1] + 15) * (len(tweet_lines)) + media_offset_h + 50
+
 
     if showFavsRt:
         rectangle_w = rectangle_w - (tweet_w - 60)
