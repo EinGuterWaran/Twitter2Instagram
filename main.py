@@ -274,10 +274,11 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
           media_offset_h = media_sizes[0][0]
         else:
           media_offset_h = media_sizes[1][0]
-        if media_sizes[2][0] > media_offset_h:
-          media_offset_h = media_sizes[2][0]
-        if media_sizes[3][0] > media_offset_h:
-          media_offset_h = media_sizes[3][0]
+        if media_sizes[2][0] > media_sizes[3][0]:
+          media_offset_h += media_sizes[2][0]
+        else:
+          media_offset_h += media_sizes[3][0]
+        media_offset_h += 20
     else:
         media_offset_h = 0
     if tweet_size[0] <= 900 and "\n" not in tweet:
@@ -343,8 +344,8 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
         media_4 = media_4.resize((media_sizes[3][1], media_sizes[1][0]))
         img.paste(media_1, ((width - media_sizes[0][1]-media_sizes[1][1]-20) // 2, tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines))))
         img.paste(media_2, ((width - media_sizes[0][1]-media_sizes[1][1]) // 2+media_sizes[0][1] +20, tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines))))
-        img.paste(media_3, ((width - media_sizes[0][1]-media_sizes[1][1]-20) // 2, tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines))))
-        img.paste(media_4, ((width - media_sizes[0][1]-media_sizes[1][1]) // 2+media_sizes[0][1] +20, tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines))))
+        img.paste(media_3, ((width - media_sizes[2][1]-media_sizes[3][1]-20) // 2, 20 + media_sizes[0][0] + tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines))))
+        img.paste(media_4, ((width - media_sizes[2][1]-media_sizes[3][1]) // 2+media_sizes[2][1] +20,  20 + media_sizes[1][0] + tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines))))
         fr_offset = tweet_h + 0 + (tweet_size[1] + 15) * (len(tweet_lines)) + media_offset_h + 50
 
     if showFavsRt:
