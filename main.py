@@ -16,8 +16,7 @@ bearer_token = os.environ['bearer_token']
 access_token = os.environ['access_token']
 access_token_secret = os.environ['access_token_secret']
 
-color_codes = [[251, 57, 88], [255, 200, 56], [109, 201, 147], [69, 142, 255],
-               [18, 86, 136]]
+color_codes = [[251, 57, 88], [255, 200, 56], [109, 201, 147], [69, 142, 255], [18, 86, 136]]
 
 
 def circle_image(im):
@@ -62,8 +61,7 @@ def is_comment(x):
 def get_profile_image(username):
     api = connect_to_twitter()
     cursor = tweepy.Cursor(api.user_timeline,
-                           id=username,
-                           tweet_mode='extended').items(1)
+     id=username, tweet_mode='extended').items(1)
     for x in cursor:
         image_url = x.user.profile_image_url
     image_url = image_url.replace("_normal", "")
@@ -72,9 +70,7 @@ def get_profile_image(username):
 
 def get_name(username):
     api = connect_to_twitter()
-    cursor = tweepy.Cursor(api.user_timeline,
-                           id=username,
-                           tweet_mode='extended').items(1)
+    cursor = tweepy.Cursor(api.user_timeline, id=username, tweet_mode='extended').items(1)
     for x in cursor:
         name = x.user.name
     return name
@@ -88,9 +84,7 @@ def connect_to_twitter():
 
 def most_liked_tweets(username, how_many, min_likes):
     api = connect_to_twitter()
-    cursor = tweepy.Cursor(api.user_timeline,
-                           id=username,
-                           tweet_mode='extended').items(how_many)
+    cursor = tweepy.Cursor(api.user_timeline, id=username, tweet_mode='extended').item(how_many)
     tweets = []
     for x in cursor:
         media_url = []
@@ -109,8 +103,7 @@ def most_liked_tweets(username, how_many, min_likes):
         columns=['tweet', 'favs', 'retweets', 'id', 'date', 'media_url'])
     tweet_df.favs = tweet_df.favs.astype(int)
     tweet_df.retweets = tweet_df.retweets.astype(int)
-    tweet_df = tweet_df.sort_values('favs',
-                                    ascending=False).reset_index(drop=True)
+    tweet_df = tweet_df.sort_values('favs', ascending=False).reset_index(drop=True)
     return tweet_df
 
 
@@ -135,7 +128,7 @@ def most_liked_tweets2(username, how_many, min_likes):
     tweet_df.favs = tweet_df.favs.astype(float)
     tweet_df.retweet = tweet_df.retweets.astype(float)
     tweet_df = tweet_df.sort_values('favs',
-                                    ascending=False).reset_index(drop=True)
+    ascending=False).reset_index(drop=True)
     return tweet_df
 
 
@@ -328,10 +321,14 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
                       font=username_font)
     fr_offset = tweet_h + (tweet_size[1] + 15) * (1 + len(tweet_lines))
     if medias == 1:
+        if len(tweet_lines) == 0:
+          len_tweet_lines = 1
+        else:
+          len_tweet_lines = len(tweet_lines)
         media = Image.open("cache/1.png", 'r')
         media = media.resize((media_sizes[0][1], media_sizes[0][0]))
-        img.paste(media, ((width - media_sizes[0][1]) // 2, tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
-        fr_offset = tweet_h + (tweet_size[1] + 15) * (len(tweet_lines)) + media_offset_h + 50
+        img.paste(media, ((width - media_sizes[0][1]) // 2, tweet_h + (tweet_size[1] + 15) *len_tweet_lines))
+        fr_offset = tweet_h + (tweet_size[1] + 15) * (len_tweet_lines) + media_offset_h + 50
     if medias == 2:
         media_1 = Image.open("cache/1.png", 'r')
         media_2 = Image.open("cache/2.png", 'r')
