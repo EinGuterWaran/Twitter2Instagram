@@ -84,7 +84,7 @@ def connect_to_twitter():
 
 def most_liked_tweets(username, how_many, min_likes):
     api = connect_to_twitter()
-    cursor = tweepy.Cursor(api.user_timeline, id=username, tweet_mode='extended').item(how_many)
+    cursor = tweepy.Cursor(api.user_timeline, id=username, tweet_mode='extended').items(how_many)
     tweets = []
     for x in cursor:
         media_url = []
@@ -320,11 +320,11 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
                       "@" + username, (83, 100, 113),
                       font=username_font)
     fr_offset = tweet_h + (tweet_size[1] + 15) * (1 + len(tweet_lines))
+    if len(tweet_lines) == 0:
+      len_tweet_lines = 1
+    else:
+      len_tweet_lines = len(tweet_lines)
     if medias == 1:
-        if len(tweet_lines) == 0:
-          len_tweet_lines = 1
-        else:
-          len_tweet_lines = len(tweet_lines)
         media = Image.open("cache/1.png", 'r')
         media = media.resize((media_sizes[0][1], media_sizes[0][0]))
         img.paste(media, ((width - media_sizes[0][1]) // 2, tweet_h + (tweet_size[1] + 15) *len_tweet_lines))
@@ -334,9 +334,9 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
         media_2 = Image.open("cache/2.png", 'r')
         media_1 = media_1.resize((media_sizes[0][1], media_sizes[0][0]))
         media_2 = media_2.resize((media_sizes[1][1], media_sizes[1][0]))
-        img.paste(media_1, ((width - media_sizes[0][1]-media_sizes[1][1]-20) // 2, tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
-        img.paste(media_2, ((width - media_sizes[0][1]-media_sizes[1][1]) // 2+media_sizes[0][1] +20, tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
-        fr_offset = tweet_h + (tweet_size[1] + 15) * (len(tweet_lines)) + media_offset_h + 50
+        img.paste(media_1, ((width - media_sizes[0][1]-media_sizes[1][1]-20) // 2, tweet_h + (tweet_size[1] + 15) * (len_tweet_lines)))
+        img.paste(media_2, ((width - media_sizes[0][1]-media_sizes[1][1]) // 2+media_sizes[0][1] +20, tweet_h + (tweet_size[1] + 15) * (len_tweet_lines)))
+        fr_offset = tweet_h + (tweet_size[1] + 15) * (len_tweet_lines) + media_offset_h + 50
     if medias == 4 or medias == 3:
         media_1 = Image.open("cache/1.png", 'r')
         media_2 = Image.open("cache/2.png", 'r')
@@ -347,13 +347,13 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
         if medias == 4:
           media_4 = Image.open("cache/4.png", 'r')
           media_4 = media_4.resize((media_sizes[3][1], media_sizes[1][0]))
-          img.paste(media_4, ((width - media_sizes[2][1]-media_sizes[3][1]) // 2+media_sizes[2][1] +20,  20 + media_sizes[1][0] + tweet_h  + (tweet_size[1] + 15) * (len(tweet_lines))))
-          img.paste(media_3, ((width - media_sizes[2][1]-media_sizes[3][1]-20) // 2, 20 + media_sizes[0][0] + tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
+          img.paste(media_4, ((width - media_sizes[2][1]-media_sizes[3][1]) // 2+media_sizes[2][1] +20,  20 + media_sizes[1][0] + tweet_h  + (tweet_size[1] + 15) * (len_tweet_lines)))
+          img.paste(media_3, ((width - media_sizes[2][1]-media_sizes[3][1]-20) // 2, 20 + media_sizes[0][0] + tweet_h + (tweet_size[1] + 15) * (len_tweet_lines)))
         else:
-          img.paste(media_3, ((width - media_sizes[2][1]) // 2, 20 + media_sizes[0][0] + tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
-        img.paste(media_1, ((width - media_sizes[0][1]-media_sizes[1][1]-20) // 2, tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
-        img.paste(media_2, ((width - media_sizes[0][1]-media_sizes[1][1]) // 2+media_sizes[0][1] +20, tweet_h + (tweet_size[1] + 15) * (len(tweet_lines))))
-        fr_offset = tweet_h + (tweet_size[1] + 15) * (len(tweet_lines)) + media_offset_h + 50
+          img.paste(media_3, ((width - media_sizes[2][1]) // 2, 20 + media_sizes[0][0] + tweet_h + (tweet_size[1] + 15) * (len_tweet_lines)))
+        img.paste(media_1, ((width - media_sizes[0][1]-media_sizes[1][1]-20) // 2, tweet_h + (tweet_size[1] + 15) * (len_tweet_lines)))
+        img.paste(media_2, ((width - media_sizes[0][1]-media_sizes[1][1]) // 2+media_sizes[0][1] +20, tweet_h + (tweet_size[1] + 15) * (len_tweet_lines)))
+        fr_offset = tweet_h + (tweet_size[1] + 15) * (len_tweet_lines) + media_offset_h + 50
 
 
     if showFavsRt:
@@ -403,7 +403,7 @@ def tweet_to_image(name, username, showFavsRt, show_date, tweet, tweet_timestamp
     print("tweet_images/" + str(tweet_id) + ".jpg saved.")
 
 
-# counter = export_janus_tweets(6701, 30)
-# tweets_to_images("tweet_lists/tweets"+counter+".csv", "JanuWaran")
+# the_counter = export_janus_tweets(6701, 30)
+# tweets_to_images("tweet_lists/tweets"+str(the_counter)+".csv", "JanuWaran", "Janu", True, True)
 # export_janus_tweets(300,20)
-tweets_to_images("tweet_lists/tweets2.csv", "JanuWaran", "Janu", True, True)
+tweets_to_images("tweet_lists/tweets5.csv", "JanuWaran", "Janu", True, True)
