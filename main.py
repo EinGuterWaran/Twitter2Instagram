@@ -37,9 +37,11 @@ def command_line_interface():
         min_favs = input("How many likes should the tweets have minimally? ")
         if checkIfNumber(min_favs):
             break
-    tweetlist_file = ft.tweets_to_csv(twitter_handle, int(last_x_tweets), int(min_favs))
+    tweetlist_file = ft.tweets_to_csv(twitter_handle, int(last_x_tweets),
+                                      int(min_favs))
     ti.tweets_to_images(tweetlist_file, twitter_handle, twitter_name, True,
                         True)
 
 
-command_line_interface()
+if __name__ == "__main__":
+    command_line_interface()
