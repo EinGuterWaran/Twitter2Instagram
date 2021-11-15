@@ -12,6 +12,9 @@ bs4 = "^0.0.1"
 opencv-python = "^4.5.4"
 pilmoji = "^2.0.1"
 pandas = "^1.3.4"
+instapy-cli = "^0.0.12"
+selenium = "^4.0.0"
+autoit = "^0.2.3"
 
 [tool.poetry.dev-dependencies]
 
