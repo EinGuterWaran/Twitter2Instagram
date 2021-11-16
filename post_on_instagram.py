@@ -3,7 +3,7 @@ import config
 import json
 
 
-def postInstagramQuote():
+def post_on_ig():
 #Post the Image
     image_location_1 = 'http:path-to-your-image.com/img/image-name.jpg'
     post_url = 'https://graph.facebook.com/v10.0/{}/media'.format(config.ig_user_id)
@@ -27,4 +27,6 @@ def postInstagramQuote():
         print(r.text)
     else:
         print('HOUSTON we have a problem')
-postInstagramQuote()
+
+        
+post_on_ig()
