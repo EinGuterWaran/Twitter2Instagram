@@ -48,5 +48,6 @@ if __name__ == "__main__":
     # tweetlist_file = ft.tweets_to_csv("matze_emmo",6701,1000)
     # TODO CLI mehr Auswahl --> Nur Liste erzeugen, Liste zu Bildern oder wie derzeit
     # TODO Bilder sollen in Ordner mit namen von Username
-    # automatisierte Pipeline + Instagram Post
-    # Wenn Bilder, sollen diese auch mit gespeichert + gepostet werden - Dateiname mit suffix
+    # TODO In CMD soll angezeigt werden was gerade passiert
+    # TODO automatisierte Pipeline + Instagram Post
+    # TODO Wenn Bilder, sollen diese auch mit gespeichert + gepostet werden - Dateiname mit suffix
