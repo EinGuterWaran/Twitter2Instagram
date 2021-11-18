@@ -49,5 +49,5 @@ if __name__ == "__main__":
     # TODO CLI mehr Auswahl --> Nur Liste erzeugen, Liste zu Bildern oder wie derzeit
     # TODO Bilder sollen in Ordner mit namen von Username
     # TODO In CMD soll angezeigt werden was gerade passiert
-    # TODO automatisierte Pipeline + Instagram Post
+    # TODO automatisierte Pipeline + Instagram Post (Facebook Graph API)
     # TODO Wenn Bilder, sollen diese auch mit gespeichert + gepostet werden - Dateiname mit suffix
