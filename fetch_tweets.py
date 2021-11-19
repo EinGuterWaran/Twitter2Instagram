@@ -103,7 +103,7 @@ def most_liked_tweets2(username, how_many, min_likes):
 
 def tweets_to_csv(username, last_x_tweets, min_favs):
     my_best_tweets = most_liked_tweets(username, last_x_tweets, min_favs)
-    timestamp_now = datetime.now(tz).strftime("%Y-%m-%d_%H:%M:%S")
+    timestamp_now = datetime.now(tz).strftime("%Y-%m-%d_%H-%M-%S")
     filename = 'tweet_lists/tweets_' + username + "_" + str(last_x_tweets) + "_" + str(min_favs) + "_" + str(
         timestamp_now) + '.csv'
     my_best_tweets.to_csv(filename, index=False)
