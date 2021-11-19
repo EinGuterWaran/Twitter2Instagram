@@ -1,32 +1,82 @@
-import requests
-import config
-import json
+from selenium import webdriver
+from selenium.webdriver.chrome.options import *
+from selenium.webdriver.common.keys import Keys
+import uinput
+import time
 
+chrome_options = Options()
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-dev-shm-usage')
 
-def post_on_ig():
-#Post the Image
-    image_location_1 = 'http:path-to-your-image.com/img/image-name.jpg'
-    post_url = 'https://graph.facebook.com/v10.0/{}/media'.format(config.ig_user_id)
-    payload = {
-        'image_url': image_location_1,
-        'caption': 'Get jobs online on https://careers-portal.co.za #career #hiring #jobs #job #jobssouthafrica #hiringnow',
-        'access_token': config.user_access_token
-        }
-    r = requests.post(post_url, data=payload)
-    print(r.text)
-    result = json.loads(r.text)
-    if 'id' in result:
-        creation_id = result['id']
-        second_url = 'https://graph.facebook.com/v10.0/{}/media_publish'.format(config.ig_user_id)
-        second_payload = {
-                'creation_id': creation_id,
-                'access_token': config.user_access_token
-                }
-        r = requests.post(second_url, data=second_payload)
-        print('--------Just posted to instagram--------')
-        print(r.text)
-    else:
-        print('HOUSTON we have a problem')
+driver = webdriver.Chrome(options=chrome_options)
 
-        
-post_on_ig()
+username = "nithila1999"
+passwd = "janunils2"
+driverpth = "https://replit.com/@EinGuterWaran/Twitter2Instagram/"
+photopath = "resources/fav.png" #examp "C:\\Users\\alire\\PycharmProjects\\instagrambot2\\logo.png"
+phototext = "tatil güzeldi!"
+
+#options = Options()
+#options.add_argument("--log-level=3")
+#options.add_argument("--silent")
+#options.add_argument("--headless")
+#options.add_argument("--no-sandbox")
+#options.add_argument("--disable-logging")
+#options.add_argument("--mute-audio")
+#mobile_emulation = {"deviceName": "Nexus 5"}
+#options.add_experimental_option("mobileEmulation", mobile_emulation)
+chrome_options.add_argument('--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1')
+# driver = webdriver.Chrome(executable_path=driverpth,options=options)
+driver.get("https://www.instagram.com/accounts/login")
+time.sleep(3)
+driver.find_element_by_xpath("//*[@id='react-root']/section/main/div/div/div/div/form/div/div/div/label/input").send_keys(username)
+time.sleep(0.5)
+driver.find_element_by_xpath("//*[@id='react-root']/section/main/div/div/div/div/form/div/div[2]/div/label/input").send_keys(passwd)
+time.sleep(0.5)
+driver.find_element_by_xpath("//*[@id='react-root']/section/main/div/div/div/div/form/div/div[3]/button/div").click()
+while 1:
+    time.sleep(1)
+    try:
+        driver.find_element_by_xpath("//*[@id='react-root']/section/nav/div[2]/div/div/div[3]/div/div[3]/div/button/div").click()
+        break
+    except:
+        pass
+while 1:
+    time.sleep(1)
+    try:
+        driver.find_element_by_xpath("/html/body/div[8]/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/button").click()
+        #s = driver.find_element_by_xpath("//input[@type='file']")
+        #file path specified with send_keys
+        #s.send_keys(photopath)
+        break
+    except:
+        pass
+# while 1:
+#     time.sleep(1)
+#     driver.find_element_by_css_selector('body').send_keys(Keys.PAGE_DOWN)
+#     try:
+#         driver.find_element_by_xpath("/html/body/div[3]/div/div/div[3]/button[2]").click()
+#         break
+#     except:
+#         pass
+
+# driver.find_element_by_xpath("//div[@role='menuitem']").click()
+time.sleep(1.5)
+with uinput.Device([uinput.REL_X, uinput.REL_Y,
+                    uinput.BTN_LEFT, uinput.BTN_RIGHT]) as device:
+    for i in range(20):
+        device.emit(uinput.REL_X, 5)
+        device.emit(uinput.REL_Y, 5)
+# autoit.win_active("Open Files") #open can change by your os language if not open change that
+time.sleep(2)
+# autoit.control_send("Open", "Edit1", photopath)
+time.sleep(1.5)
+# autoit.control_send("Open", "Edit1", "{ENTER}")
+time.sleep(2)
+driver.find_element_by_xpath("//*[@id='react-root']/section/div[1]/header/div/div[2]/button").click()
+time.sleep(1)
+driver.find_element_by_xpath("//*[@id='react-root']/section/div[2]/section[1]/div[1]/textarea").send_keys(phototext)
+time.sleep(1)
+driver.find_element_by_xpath("//*[@id='react-root']/section/div[1]/header/div/div[2]/button").click()
+time.sleep(4)
+driver.close()
