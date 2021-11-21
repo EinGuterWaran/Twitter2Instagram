@@ -11,12 +11,14 @@ from selenium.webdriver.chrome.service import Service
 ig_username = os.environ.get('ig_username')
 ig_pw = os.environ.get('ig_pw')
 mobile_emulation = {
-    "deviceMetrics": { "width": 360, "height": 640, "pixelRatio": 3.0 },
-    "userAgent": "Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Build/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Mobile Safari/535.19" }
+    "deviceMetrics": {"width": 360, "height": 640, "pixelRatio": 3.0},
+    "userAgent": "Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Build/JOP40D) "
+                 "AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Mobile "
+                 "Safari/535.19"}
 chrome_options = Options()
 chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
 
-s=Service(ChromeDriverManager().install())
+s = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=s, options=chrome_options)
 
 driver.get('https://www.instagram.com/accounts/login/')
@@ -31,12 +33,12 @@ time.sleep(3)
 driver.find_element_by_xpath("//*[@id='react-root']/section/main/div/div/div/div/form/div/div[6]/button/div").click()
 
 time.sleep(4)
-username = "nithila1999"
-driver.get('https://www.instagram.com/' + username)
+driver.get('https://www.instagram.com/' + ig_username)
 
 dir_path = 'Your File Location'
 
-ActionChains(driver).move_to_element( driver.find_element_by_xpath("""//*[@id="react-root"]/section/nav[2]/div/div/div[2]/div/div/div[3]""")).click().perform()
+ActionChains(driver).move_to_element(driver.find_element_by_xpath(
+    """//*[@id="react-root"]/section/nav[2]/div/div/div[2]/div/div/div[3]""")).click().perform()
 handle = "[CLASS:#32770; TITLE:Öffnen]"
 autoit.win_wait(handle, 3)
 autoit.control_set_text(handle, "Edit1", dir_path)
@@ -51,7 +53,7 @@ time.sleep(2)
 txt = driver.find_element_by_class_name('_472V_')
 txt.send_keys('')
 txt = driver.find_element_by_class_name('_472V_')
-txt.send_keys('test') # Descrition
+txt.send_keys('test')  # Description
 txt.send_keys(Keys.ENTER)
 
 driver.find_element_by_xpath("""//*[@id="react-root"]/section/div[1]/header/div/div[2]/button""").click()
