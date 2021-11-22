@@ -35,7 +35,8 @@ driver.find_element_by_xpath("//*[@id='react-root']/section/main/div/div/div/div
 time.sleep(4)
 driver.get('https://www.instagram.com/' + ig_username)
 
-dir_path = 'Your File Location'
+dir_path = os.path.abspath(__file__)
+dir_path = os.path.dirname(dir_path) + "\\tweet_images\example.jpg"
 
 ActionChains(driver).move_to_element(driver.find_element_by_xpath(
     """//*[@id="react-root"]/section/nav[2]/div/div/div[2]/div/div/div[3]""")).click().perform()
