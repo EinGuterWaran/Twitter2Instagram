@@ -2,7 +2,7 @@ from credentials import client_key, client_secret, access_token, access_token_se
 import tweepy
 import pandas as pd
 import numpy as np
-import GetOldTweets3 as got
+import GetOldTweets3 as Got
 from datetime import datetime
 import pytz
 import os
@@ -65,9 +65,10 @@ def most_liked_tweets(username, how_many, min_likes):
                     media_url.append(media['media_url'])
             favs = x.favorite_count
             retweets = x.retweet_count
-            id = x.id
+            the_id = x.id
             when = x.created_at
-            tweets.append([x.full_text, favs, retweets, id, when, media_url])
+            tweets.append([x.full_text, favs, retweets, the_id, when, media_url])
+            print("Tweet "+str(the_id)+": "+x.full_text+" added.")
     tweet_df = pd.DataFrame(
         np.array(tweets),
         columns=['tweet', 'favs', 'retweets', 'id', 'date', 'media_url'])
@@ -80,10 +81,10 @@ def most_liked_tweets(username, how_many, min_likes):
 
 def most_liked_tweets2(username, how_many, min_likes):
     # Creation of query object
-    tweetCriteria = got.manager.TweetCriteria().setUsername(
+    tweetCriteria = Got.manager.TweetCriteria().setUsername(
         username).setMaxTweets(how_many)
     # Creation of list that contains all tweets
-    thetweets = got.manager.TweetManager.getTweets(tweetCriteria)
+    thetweets = Got.manager.TweetManager.getTweets(tweetCriteria)
     # Creating list of chosen tweet data
     tweets = []
     for x in thetweets:
@@ -91,9 +92,9 @@ def most_liked_tweets2(username, how_many, min_likes):
                 x) and x.favorite_count >= min_likes:
             favs = x.favorite_count
             retweets = x.retweet_count
-            id = x.id
+            the_id = x.id
             when = x.created_at
-            tweets.append([x.full_text, favs, retweets, id, when])
+            tweets.append([x.full_text, favs, retweets, the_id, when])
     tweet_df = pd.DataFrame(
         np.array(tweets), columns=['tweet', 'favs', 'retweets', 'id', 'date'])
     tweet_df.favs = tweet_df.favs.astype(float)
@@ -108,8 +109,8 @@ def tweets_to_csv(username, last_x_tweets, min_favs):
     timestamp_now = datetime.now(tz).strftime("%Y-%m-%d_%H-%M-%S")
     if not os.path.exists('tweet_lists/'+username):
         os.makedirs('tweet_lists/'+username)
-    filename = 'tweet_lists/'+username+'/tweets_' + username + "_" + str(last_x_tweets) + "_" + str(min_favs) + "_" + str(
-        timestamp_now) + '.csv'
+    filename = 'tweet_lists/'+username+'/tweets_' + username + "_" + str(last_x_tweets) + "_" + str(min_favs) + "_" + \
+               str(timestamp_now) + '.csv'
     my_best_tweets.to_csv(filename, index=False)
 
     print(filename+" saved.")
