@@ -50,7 +50,7 @@ def command_line_interface():
             ti.tweets_to_images(tweetlist_file, twitter_handle, twitter_name, True, True)
     if mode in ['I', 'i']:
         filename = input("Enter the file name (without the csv ending)!\n")
-        filename = 'tweet_lists/'+filename+'.csv'
+        filename = 'tweet_lists/'+twitter_handle+'/'+filename+'.csv'
         ti.tweets_to_images(filename, twitter_handle, twitter_name, True,
                             True)
 
@@ -58,7 +58,6 @@ def command_line_interface():
 if __name__ == "__main__":
     command_line_interface()
     # tweetlist_file = ft.tweets_to_csv("matze_emmo",6701,1000)
-    # TODO Bilder sollen in Ordner mit namen von Username
     # TODO In CMD soll angezeigt werden was gerade passiert
     # TODO automatisierte Pipeline + Instagram Post (Facebook Graph API)
     # TODO Wenn Bilder, sollen diese auch mit gespeichert + gepostet werden - Dateiname mit suffix
