@@ -1,5 +1,6 @@
 import fetch_tweets as ft
 import tweet_image as ti
+import post_on_instagram as poi
 
 
 def checkIfNumber(number):
@@ -24,39 +25,47 @@ def command_line_interface():
                      "Enter P if you want to post a tweet image on Instagram!\n")
         if mode in ["L", "l", "LI", "li", "I", "i", "P", "p"]:
             break
-    if mode in ["p", "P"]:
-        print("Posting...")
-    else:
+    while True:
+        twitter_handle = input("Enter the Twitter username (handle)! ")
+        if twitter_handle != "":
+            break
+        print("Your input is empty.")
+    twitter_name = input(
+        "Enter the name (leave this blank if you want to fetch the original name)! "
+    )
+    if mode not in ["I", "i", "P", "p"]:
         while True:
-            twitter_handle = input("Enter the Twitter username (handle)! ")
-            if twitter_handle != "":
+            last_x_tweets = input(
+                "How many recent tweets should be reviewed (Leave empty to use the maximum possible number)? "
+            )
+            if last_x_tweets == "" or checkIfNumber(last_x_tweets):
+                if last_x_tweets == "":
+                    last_x_tweets = 6701
                 break
-            print("Your input is empty.")
-        twitter_name = input(
-            "Enter the name (leave this blank if you want to fetch the original name)! "
-        )
-        if mode not in ["i", "I"]:
-            while True:
-                last_x_tweets = input(
-                    "How many recent tweets should be reviewed (Leave empty to use the maximum possible number)? "
-                )
-                if last_x_tweets == "" or checkIfNumber(last_x_tweets):
-                    if last_x_tweets == "":
-                        last_x_tweets = 6701
-                    break
-            while True:
-                min_favs = input("How many likes should the tweets have minimally? ")
-                if checkIfNumber(min_favs):
-                    break
-            tweetlist_file = ft.tweets_to_csv(twitter_handle, int(last_x_tweets),
-                                              int(min_favs))
-            if mode in ["LI", "li"]:
-                ti.tweets_to_images(tweetlist_file, twitter_handle, twitter_name, True, True)
-        if mode in ['I', 'i']:
-            filename = input("Enter the file name (without the csv ending)!\n")
-            filename = 'tweet_lists/'+twitter_handle+'/'+filename+'.csv'
-            ti.tweets_to_images(filename, twitter_handle, twitter_name, True,
-                                True)
+        while True:
+            min_favs = input("How many likes should the tweets have minimally? ")
+            if checkIfNumber(min_favs):
+                break
+        tweetlist_file = ft.tweets_to_csv(twitter_handle, int(last_x_tweets),
+                                          int(min_favs))
+        if mode in ["LI", "li"]:
+            ti.tweets_to_images(tweetlist_file, twitter_handle, twitter_name, True, True)
+    if mode in ['I', 'i']:
+        filename = input("Enter the file name (without the csv ending)!\n")
+        filename = 'tweet_lists/' + twitter_handle + '/' + filename + '.csv'
+        ti.tweets_to_images(filename, twitter_handle, twitter_name, True,
+                            True)
+    if mode in ['P', 'p']:
+        filename = input("Enter the file name of the image (without the jpg ending)!\n")
+        username = input("Enter your Instagram username!\n")
+        password = input("Enter your Instagram password!\n")
+        caption = input("Enter the caption for the post!\n")
+        try:
+            print("Posting...")
+            poi.post(username, password, "tweet_images\\" + filename+".jpg", caption)
+            print("Posted successfully.")
+        except:
+            print("The login failed. Check your username and password!")
 
 
 if __name__ == "__main__":
