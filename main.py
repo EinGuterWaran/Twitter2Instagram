@@ -71,6 +71,6 @@ def command_line_interface():
 if __name__ == "__main__":
     command_line_interface()
     # tweetlist_file = ft.tweets_to_csv("matze_emmo",6701,1000)
-    # TODO in CLI auf Insta posten
     # TODO automatisierte Pipeline + Instagram Post (Facebook Graph API)
     # TODO Wenn Bilder, sollen diese auch mit gespeichert + gepostet werden - Dateiname mit suffix
+    # TODO Submodules
