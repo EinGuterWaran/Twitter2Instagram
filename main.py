@@ -74,5 +74,3 @@ def command_line_interface():
 
 if __name__ == "__main__":
     command_line_interface()
-    # TODO automatisierte Pipeline
-    # TODO Wenn Bilder, sollen diese auch mit gespeichert + gepostet werden - Dateiname mit suffix
