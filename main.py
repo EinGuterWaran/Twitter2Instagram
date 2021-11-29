@@ -1,7 +1,6 @@
 import fetch_tweets as ft
-import tweet_image as ti
-# import post_on_instagram as poi
-from PostOnInstagram.post_on_instagram import post
+from PostOnInstagram import post_on_instagram as poi
+from Tweet2Image import tweet_image as ti
 import os
 
 
@@ -66,16 +65,17 @@ def command_line_interface():
         try:
             print("Posting...")
             dir_path = os.path.dirname(os.path.realpath(__file__))
-            post(username, password, dir_path+"\\tweet_images\\" + filename+".jpg", caption)
+            poi.post(username, password, dir_path+"\\tweet_images\\" + filename+".jpg", caption)
             print("Posted successfully.")
         except:
             print("The login failed. Check your username and password!")
 
 
 if __name__ == "__main__":
-    command_line_interface()
+    # command_line_interface()
+    ti.tweets_to_images("tweet_lists/JanuWaran/tweets_JanuWaran_6701_25_2021-11-23_17-20-54.csv", "JanuWaran", "Janu", True, True)
     # tweetlist_file = ft.tweets_to_csv("matze_emmo",6701,1000)
-    # TODO automatisierte Pipeline + Instagram Post (Facebook Graph API)
+    # TODO automatisierte Pipeline
     # TODO Wenn Bilder, sollen diese auch mit gespeichert + gepostet werden - Dateiname mit suffix
     # TODO Submodule (Fetch Tweets)
     # TODO Submodule (Tweets to Image)
