@@ -1,6 +1,8 @@
 import fetch_tweets as ft
 import tweet_image as ti
-import post_on_instagram as poi
+# import post_on_instagram as poi
+from PostOnInstagram.post_on_instagram import post
+import os
 
 
 def checkIfNumber(number):
@@ -25,14 +27,15 @@ def command_line_interface():
                      "Enter P if you want to post a tweet image on Instagram!\n")
         if mode in ["L", "l", "LI", "li", "I", "i", "P", "p"]:
             break
-    while True:
-        twitter_handle = input("Enter the Twitter username (handle)! ")
-        if twitter_handle != "":
-            break
-        print("Your input is empty.")
-    twitter_name = input(
-        "Enter the name (leave this blank if you want to fetch the original name)! "
-    )
+    if mode not in ["p", "P"]:
+        while True:
+            twitter_handle = input("Enter the Twitter username (handle)! ")
+            if twitter_handle != "":
+                break
+            print("Your input is empty.")
+        twitter_name = input(
+            "Enter the name (leave this blank if you want to fetch the original name)! "
+        )
     if mode not in ["I", "i", "P", "p"]:
         while True:
             last_x_tweets = input(
@@ -62,7 +65,8 @@ def command_line_interface():
         caption = input("Enter the caption for the post!\n")
         try:
             print("Posting...")
-            poi.post(username, password, "tweet_images\\" + filename+".jpg", caption)
+            dir_path = os.path.dirname(os.path.realpath(__file__))
+            post(username, password, dir_path+"\\tweet_images\\" + filename+".jpg", caption)
             print("Posted successfully.")
         except:
             print("The login failed. Check your username and password!")
