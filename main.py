@@ -72,9 +72,7 @@ def command_line_interface():
 
 
 if __name__ == "__main__":
-    # command_line_interface()
-    ti.tweets_to_images("tweet_lists/JanuWaran/tweets_JanuWaran_6701_25_2021-11-23_17-20-54.csv", "JanuWaran", "Janu", True, True)
-    # tweetlist_file = ft.tweets_to_csv("matze_emmo",6701,1000)
+    command_line_interface()
     # TODO automatisierte Pipeline
     # TODO Wenn Bilder, sollen diese auch mit gespeichert + gepostet werden - Dateiname mit suffix
     # TODO Submodule (Fetch Tweets)
