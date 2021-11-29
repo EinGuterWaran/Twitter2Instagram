@@ -78,4 +78,3 @@ if __name__ == "__main__":
     # TODO automatisierte Pipeline
     # TODO Wenn Bilder, sollen diese auch mit gespeichert + gepostet werden - Dateiname mit suffix
     # TODO Submodule (Fetch Tweets)
-    # TODO Submodule (Tweets to Image)
