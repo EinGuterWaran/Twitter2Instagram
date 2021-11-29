@@ -77,4 +77,5 @@ if __name__ == "__main__":
     # tweetlist_file = ft.tweets_to_csv("matze_emmo",6701,1000)
     # TODO automatisierte Pipeline + Instagram Post (Facebook Graph API)
     # TODO Wenn Bilder, sollen diese auch mit gespeichert + gepostet werden - Dateiname mit suffix
-    # TODO Submodules
+    # TODO Submodule (Fetch Tweets)
+    # TODO Submodule (Tweets to Image)
