@@ -1,6 +1,7 @@
-import fetch_tweets as ft
+# import fetch_tweets as ft
 from PostOnInstagram import post_on_instagram as poi
 from Tweet2Image import tweet_image as ti
+from FetchTweets import  fetch_tweets as ft
 import os
 
 
@@ -75,4 +76,3 @@ if __name__ == "__main__":
     command_line_interface()
     # TODO automatisierte Pipeline
     # TODO Wenn Bilder, sollen diese auch mit gespeichert + gepostet werden - Dateiname mit suffix
-    # TODO Submodule (Fetch Tweets)

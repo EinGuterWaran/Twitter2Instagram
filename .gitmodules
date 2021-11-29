@@ -4,3 +4,6 @@
 [submodule "Tweet2Image"]
 	path = Tweet2Image
 	url = https://github.com/EinGuterWaran/Tweet2Image
+[submodule "FetchTweets"]
+	path = FetchTweets
+	url = https://github.com/EinGuterWaran/FetchTweets
